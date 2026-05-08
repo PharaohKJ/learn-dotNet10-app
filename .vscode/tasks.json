@@ -14,6 +14,20 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/MyServerJob.App/MyServerJob.App.csproj",
+                "--configuration",
+                "Release",
+                "--output",
+                "${workspaceFolder}/publish"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "test",
             "command": "dotnet",
             "type": "process",

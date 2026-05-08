@@ -42,6 +42,11 @@ MyServerJob/
 - **タスクから実行**: `Cmd+Shift+P` → **「タスクの実行」** → **「test」**
 - **テストエクスプローラー**: 左側のビーカーアイコンからテストを一覧表示・個別実行できます
 
+### リリースビルド・配布方法
+
+`Cmd+Shift+P` → **「タスクの実行」** → **「publish」** を選択します。  
+ビルド成果物はプロジェクトルートの `publish/` フォルダに出力されます。
+
 ## CLI を使う方法
 
 ### ビルド方法
@@ -65,3 +70,32 @@ dotnet run --project MyServerJob.App/MyServerJob.App.csproj
 ```bash
 dotnet test MyServerJob.Tests/MyServerJob.Tests.csproj
 ```
+
+### リリースビルド・配布方法
+
+```bash
+dotnet publish MyServerJob.App/MyServerJob.App.csproj --configuration Release --output ./publish
+```
+
+成果物は `publish/` フォルダに出力されます。このフォルダをそのまま配布してください。
+
+### 受け取った側での実行方法
+
+配布された `publish/` フォルダを受け取った場合、.NET ランタイムのインストール不要な **自己完結型 (self-contained)** ビルドであれば次のように実行できます。
+
+```bash
+# macOS / Linux
+./MyServerJob.App
+
+# Windows
+MyServerJob.App.exe
+```
+
+.NET ランタイムが必要な通常ビルドの場合は、[.NET 10 ランタイム](https://dotnet.microsoft.com/download/dotnet/10.0) をインストールしてから実行してください。
+
+```bash
+dotnet MyServerJob.App.dll
+```
+
+> **自己完結型ビルド** にする場合は publish コマンドに `--self-contained true -r <RID>` を追加します。  
+> 例（macOS Apple Silicon）: `dotnet publish ... --self-contained true -r osx-arm64`
