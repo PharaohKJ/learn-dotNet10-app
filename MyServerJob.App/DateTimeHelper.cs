@@ -6,4 +6,10 @@ public static class DateTimeHelper
     {
         return DateTime.Now;
     }
+
+    public static DateTime GetCurrentJstDateTime()
+    {
+        var jstTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Tokyo");
+        return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jstTimeZone);
+    }
 }

@@ -1,0 +1,62 @@
+name: .NET Release Build and Deploy to ECR
+
+on:
+  push:
+    branches: [ release ]
+
+env:
+  # Repository Secretsで以下を設定してください：
+  # - ECR_REGISTRY: ECRレジストリのURL（例: 123456789012.dkr.ecr.us-east-1.amazonaws.com）
+  # - ECR_REPOSITORY: ECRリポジトリ名（例: my-server-job）
+  # - AWS_ACCESS_KEY_ID: AWS IAMユーザーのアクセスキーID
+  # - AWS_SECRET_ACCESS_KEY: AWS IAMユーザーのシークレットアクセスキー
+  ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  AWS_REGION: us-east-1
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+    
+    - name: Publish application
+      run: dotnet publish MyServerJob.App/MyServerJob.App.csproj --configuration Release --output ./publish
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v2
+      with:
+        # Repository Secretsから認証情報を取得
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: |
+          ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+          ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+        cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:buildcache
+        cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:buildcache,mode=max

@@ -99,3 +99,13 @@ dotnet MyServerJob.App.dll
 
 > **自己完結型ビルド** にする場合は publish コマンドに `--self-contained true -r <RID>` を追加します。  
 > 例（macOS Apple Silicon）: `dotnet publish ... --self-contained true -r osx-arm64`
+
+## Docker / ECR 関連ドキュメント
+
+- Docker のローカルビルド・実行手順: [USE-DOCKER.md](USE-DOCKER.md)
+- ECR 連携、必要変数、GitHub/AWS 設定: [ECR.md](ECR.md)
+
+## ブランチ戦略
+
+- `release` ブランチに push すると GitHub Actions が自動でビルド・テストを行い、成功時に ECR へ Docker イメージを push します。
+- それ以外のブランチ運用は GitHub Flow に沿って進めます。
