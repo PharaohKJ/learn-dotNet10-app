@@ -10,4 +10,10 @@ public class UnitTest1
         var now = DateTimeHelper.GetCurrentDateTime();
         Assert.Equal(2026, now.Year);
     }
+
+    [Fact]
+    public void IntentionalFailureForCiValidation()
+    {
+        Assert.Fail("Intentional failure to verify CI test failure on GitHub push.");
+    }
 }
