@@ -1,12 +1,13 @@
 ﻿namespace MyServerJob.Tests;
 
+using MyServerJob.App;
+
 public class UnitTest1
 {
     [Fact]
-    public void Test1()
+    public void TestCurrentYearIs2026()
     {
-        // Assert.Fail("このテストは意図的に失敗させています。");
-        Assert.True(true, "このテストは意図的に失敗させています。");
+        var now = DateTimeHelper.GetCurrentDateTime();
+        Assert.Equal(2026, now.Year);
     }
-
 }
